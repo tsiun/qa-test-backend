@@ -1,0 +1,81 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.pytest_cache
+nosetests.xml
+coverage.xml
+
+# Mypy / linters / caches
+.mypy_cache/
+.pyre/
+.cache/
+
+# Django / Flask local files
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+instance/
+media/
+staticfiles/
+
+# Sphinx documentation
+docs/_build/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Secrets / env
+.env
+.env.* 
+secrets.yml
+*.pem
+*.key
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Node (if frontend present)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Misc
+*.log
+*.tmp
