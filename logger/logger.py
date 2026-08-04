@@ -1,53 +1,79 @@
+import time
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import sys
-from logging.handlers import RotatingfileHandler
-from typing import Union
 
 from logger.logger_config import LoggerConfig
 
 
 class Logger:
-    if not os.path.isdir(LoggerConfig.LOGS_DIR_NAME):
-        os.makedirs(LoggerConfig.LOGS_DIR_NAME)
-    __logger = logging.getLogger(LoggerConfig.LOGGER_NAME)
-    __logger.setLevel(LoggerConfig.LOGS_LEVEL)
-    __handler1 = RotatingFileHander(
-        LoggerConfig.LOGS_FILE_MAME,
-        maxBytes=LoggerConfig.MAX_BYTES,
-        backupCount=LoggerConfig.BACKUP_COUNT,
-    )
-    __handler2 = logging.StreamHandler(sys.stdout)
-    __formatter = logging.Formatter(LoggerConfig.FORMAT)
-    __handler1.setFormatter(__formatter)
-    __handler2.setFormatter(__formatter)
-    __logger.addHandler(__handler1)
-    __logger.addhandler(__handler2)
+    __logger: logging.Logger | None = None
 
-    @staticmethod
-    def set_level(level: Union[str, int]) -> None:
-        Logger.__logger.setlevel(level)
+    @classmethod
+    def _initialize_logger(cls) -> None:
+        if cls.__logger is not None:
+            return
 
-    @staticmethod
-    def info(message: str) -> None:
-        Logger.__logger.info(msg=message)
+        os.makedirs(LoggerConfig.LOGS_DIR_NAME, exist_ok=True)
 
-    @staticmethod
-    def debug(message: str) -> None:
-        Logger.__logger.debug(msg=message)
+        cls.__logger = logging.getLogger(LoggerConfig.LOGGER_NAME)
+        cls.__logger.setLevel(LoggerConfig.LOGS_LEVEL)
+        cls.__logger.propagate = False
 
-    @staticmethod
-    def warning(message: str) -> None:
-        Logger.__logger.warning(msg=message)
+        if cls.__logger.handlers:
+            return
 
-    @staticmethod
-    def error(message: str) -> None:
-        Logger.__logger.error(msg=message)
+        formatter = logging.Formatter(
+            LoggerConfig.FORMAT, datefmt=LoggerConfig.DATETIME_FORMAT
+        )
 
-    @staticmethod
-    def fatal(message: str) -> None:
-        Logger.__logger.fatal(msg=message)
+        # UTC время
+        formatter.converter = time.gmtime
 
-    @staticmethod
-    def step(message: str) -> None:
-        Logger.__logger.info(msg=message)
+        file_handler = RotatingFileHandler(
+            LoggerConfig.LOGS_FILE_NAME,
+            maxBytes=LoggerConfig.MAX_BYTES,
+            backupCount=LoggerConfig.BACKUP_COUNT,
+            encoding="utf-8",
+        )
+        file_handler.setFormatter(formatter)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+
+        cls.__logger.addHandler(file_handler)
+        cls.__logger.addHandler(console_handler)
+
+    @classmethod
+    def _get_logger(cls) -> logging.Logger:
+        cls._initialize_logger()
+        return cls.__logger
+
+    @classmethod
+    def info(cls, message: str) -> None:
+        cls._get_logger().info(msg=message)
+
+    @classmethod
+    def set_level(cls, level: str | int) -> None:
+        cls._get_logger().setLevel(level)
+
+    @classmethod
+    def debug(cls, message: str) -> None:
+        cls._get_logger().debug(msg=message)
+
+    @classmethod
+    def warning(cls, message: str) -> None:
+        cls._get_logger().warning(msg=message)
+
+    @classmethod
+    def error(cls, message: str) -> None:
+        cls._get_logger().error(msg=message)
+
+    @classmethod
+    def critical(cls, message: str) -> None:
+        cls._get_logger().critical(msg=message)
+
+    @classmethod
+    def step(cls, message: str) -> None:
+        cls._get_logger().info(msg=f"--- STEP: {message} ---")
