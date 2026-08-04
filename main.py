@@ -1,7 +1,11 @@
-import requests
-from faker import Faker
 import random
 
+from faker import Faker
+
+from helper.authorization_helper import AuthorizationHelper
+from helper.group_helper import GroupHelper
+from helper.student_helper import StudentHelper
+from helper.user_helper import UserHelper
 from utils.api_utils import ApiUtils
 
 AUTH_URL = "http://127.0.0.1:8000"
@@ -18,33 +22,39 @@ faker = Faker()
 
 username = faker.user_name()
 password = faker.password()
-auth_api_utils = ApiUtils(AUTH_URL)
-response = auth_api_utils.post(
-    REGISTER_ENDPOINT,
+
+authorization_helper = AuthorizationHelper(api_utils=ApiUtils(AUTH_URL))
+response = authorization_helper.post_register(
     data={
         "username": username,
         "password": password,
         "password_repeat": password,
         "email": faker.email(),
-    },
+    }
 )
-response = auth_api_utils.post(
-    LOGIN_ENDPOINT, data={"username": username, "password": password}
+response = authorization_helper.post_login(
+    data={"username": username, "password": password}
 )
 
 access_token = response.json()["access_token"]
+
 admin_auth_api_utils = ApiUtils(
     AUTH_URL, headers={"Authorization": f"Bearer {access_token}"}
 )
+user_admin_helper = UserHelper(admin_auth_api_utils)
+
+
 admin_university_api_utils = ApiUtils(
     UNIVERSITY_URL, headers={"Authorization": f"Bearer {access_token}"}
 )
-response = admin_auth_api_utils.get(ME_ENDPOINT)
+group_admin_helper = GroupHelper(admin_university_api_utils)
+student_admin_helper = StudentHelper(admin_university_api_utils)
 
-response = admin_university_api_utils.post(GROUPS_ENDPOINT, json={"name": faker.word()})
+response = user_admin_helper.get_me()
 
-response = admin_university_api_utils.post(
-    STUDENTS_ENDPOINT,
+response = group_admin_helper.post_group(json={"name": faker.word()})
+
+response = student_admin_helper.post_student(
     json={
         "first_name": faker.first_name(),
         "last_name": faker.last_name(),
