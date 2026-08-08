@@ -10,3 +10,12 @@ class GroupHelper(BaseHelper):
     def post_group(self, json: dict) -> requests.Response:
         response = self.api_utils.post(self.ROOT_ENDPOINT, json=json)
         return response
+
+    def get_groups(self) -> requests.Response:
+        response = self.api_utils.get(self.ROOT_ENDPOINT)
+        return response
+
+    def get_group_id(self, group_id: int) -> requests.Response:
+        GROUP_ID_ENDPOINT = f"{self.ENDPOINT_PREFIX}/{group_id}/"
+        response = self.api_utils.get(GROUP_ID_ENDPOINT)
+        return response
