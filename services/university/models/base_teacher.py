@@ -1,4 +1,14 @@
+from enum import StrEnum
+
 from pydantic import BaseModel, ConfigDict
+
+
+class SubjectEnum(StrEnum):
+    MATEMATICS = "Mathematics"
+    PHYSICS = "Physics"
+    HISTORY = "History"
+    BIOLOGY = "Biology"
+    GEOGRAPHY = "Geography"
 
 
 class BaseTeacher(BaseModel):
