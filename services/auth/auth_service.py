@@ -27,6 +27,10 @@ class AuthService(BaseService):
         response = self.authorization_helper.post_login(data=login_request.model_dump())
         return LoginResponse(**response.json())
 
+    def get_user(self) -> SuccessResponse:
+        response = self.user_helper.get_me()
+        return SuccessResponse(**response.json())
+
     # def create_random_student(self): # EXAMPLE
     #     raise NotImplementedError
 
