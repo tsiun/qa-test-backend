@@ -30,9 +30,3 @@ class AuthService(BaseService):
     def get_user(self) -> SuccessResponse:
         response = self.user_helper.get_me()
         return SuccessResponse(**response.json())
-
-    # def create_random_student(self): # EXAMPLE
-    #     raise NotImplementedError
-
-    # def create_group_and_studen(self): # EXAMPLE
-    #     raise NotImplementedError
