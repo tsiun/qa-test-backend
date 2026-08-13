@@ -1,3 +1,5 @@
+from pydantic import TypeAdapter
+
 from services.general.base_service import BaseService
 from services.university.helpers.grade_helper import GradeHelper
 from services.university.helpers.group_helper import GroupHelper
@@ -29,9 +31,10 @@ class UniversityService(BaseService):
         response = self.group_helper.post_group(json=group_request.model_dump())
         return GroupResponse(**response.json())
 
-    def get_groups(self) -> GroupResponse:
+    def get_groups(self) -> list[GroupResponse]:
         response = self.group_helper.get_groups()
-        return GroupResponse(**response.json())
+        groups_adapter = TypeAdapter(list[GroupResponse])
+        return groups_adapter.validate_python(response.json())
 
     def get_group(self, group_id: int) -> GroupResponse:
         response = self.group_helper.get_group_id(group_id=group_id)
@@ -51,9 +54,10 @@ class UniversityService(BaseService):
         response = self.student_helper.post_student(json=student_request.model_dump())
         return StudentResponse(**response.json())
 
-    def get_students(self) -> StudentResponse:
+    def get_students(self) -> list[StudentResponse]:
         response = self.student_helper.get_students()
-        return StudentResponse(**response.json())
+        students_adapter = TypeAdapter(list[StudentResponse])
+        return students_adapter.validate_python(response.json())
 
     def get_student(self, student_id: int) -> StudentResponse:
         response = self.student_helper.get_student(student_id=student_id)
@@ -75,9 +79,10 @@ class UniversityService(BaseService):
         response = self.teacher_helper.post_teacher(json=teacher_request.model_dump())
         return TeacherResponse(**response.json())
 
-    def get_teachers(self) -> TeacherResponse:
+    def get_teachers(self) -> list[TeacherResponse]:
         response = self.teacher_helper.get_teachers()
-        return TeacherResponse(**response.json())
+        teachers_adapter = TypeAdapter(list[TeacherResponse])
+        return teachers_adapter.validate_python(response.json())
 
     def get_teacher(self, teacher_id: int) -> TeacherResponse:
         response = self.teacher_helper.get_teacher(teacher_id=teacher_id)
@@ -99,8 +104,8 @@ class UniversityService(BaseService):
         response = self.grade_helper.post_grade(json=grade_request.model_dump())
         return GradeResponse(**response.json())
 
-    def get_grades(self) -> GradeResponse:
-        response = self.grade_helper.get_grades()
+    def get_grades(self, grade_request: GradeRequest) -> GradeResponse:
+        response = self.grade_helper.get_grades(json=grade_request.model_dump())
         return GradeResponse(**response.json())
 
     def get_grade_stats(self) -> GradeResponse:
