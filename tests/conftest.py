@@ -1,3 +1,4 @@
+import random
 import time
 
 import pytest
@@ -6,6 +7,12 @@ import requests
 from services.auth.auth_service import AuthService
 from services.auth.models.login_request import LoginRequest
 from services.auth.models.register_request import RegisterRequest
+from services.university.helpers import group_helper
+from services.university.helpers.group_helper import GroupHelper
+from services.university.helpers.teacher_helper import TeacherHelper
+from services.university.models.base_teacher import SubjectEnum
+from services.university.models.group_request import GroupRequest
+from services.university.models.teacher_request import TeacherRequest
 from services.university.university_service import UniversityService
 from utils.api_utils import ApiUtils
 from faker import Faker
@@ -77,3 +84,43 @@ def university_api_utils_admin(access_token):
         headers={"Authorization": f"Bearer {access_token}"},
     )
     return api_utils
+
+
+@pytest.fixture(scope="session", autouse=False)
+def group_data(university_api_utils_admin):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    group = GroupRequest(name=faker.word())
+    group_data = university_service.create_group(group_request=group)
+    return group_data
+
+
+@pytest.fixture(scope="session", autouse=False)
+def group_responce(university_api_utils_admin):
+    group_helper = GroupHelper(api_utils=university_api_utils_admin)
+    group_response = group_helper.post_group({"name": faker.word()})
+    return group_response
+
+
+@pytest.fixture(scope="session", autouse=False)
+def teacher_data(university_api_utils_admin):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    teacher = TeacherRequest(
+        first_name=faker.first_name(),
+        last_name=faker.last_name(),
+        subject=random.choice(list(SubjectEnum)),
+    )
+    teacher_data = university_service.create_teacher(teacher_request=teacher)
+    return teacher_data
+
+
+@pytest.fixture(scope="session", autouse=False)
+def teacher_response(university_api_utils_admin):
+    teacher_helper = TeacherHelper(api_utils=university_api_utils_admin)
+    teacher_response = teacher_helper.post_teacher(
+        {
+            "first_name": faker.first_name(),
+            "last_name": faker.last_name(),
+            "subject": random.choice(list(SubjectEnum)),
+        }
+    )
+    return teacher_response
