@@ -7,7 +7,6 @@ import requests
 from services.auth.auth_service import AuthService
 from services.auth.models.login_request import LoginRequest
 from services.auth.models.register_request import RegisterRequest
-from services.university.helpers import group_helper
 from services.university.helpers.group_helper import GroupHelper
 from services.university.helpers.teacher_helper import TeacherHelper
 from services.university.models.base_teacher import SubjectEnum
@@ -95,7 +94,7 @@ def group_data(university_api_utils_admin):
 
 
 @pytest.fixture(scope="session", autouse=False)
-def group_responce(university_api_utils_admin):
+def group_response(university_api_utils_admin):
     group_helper = GroupHelper(api_utils=university_api_utils_admin)
     group_response = group_helper.post_group({"name": faker.word()})
     return group_response
