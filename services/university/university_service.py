@@ -5,7 +5,7 @@ from services.university.helpers.grade_helper import GradeHelper
 from services.university.helpers.group_helper import GroupHelper
 from services.university.helpers.student_helper import StudentHelper
 from services.university.helpers.teacher_helper import TeacherHelper
-from services.university.models.grade_request import GradeRequest
+from services.university.models.grade_request import GradeRequest, GradeQueryParams
 from services.university.models.grade_response import GradeResponse
 from services.university.models.grade_stats_response import GradeStatsResponse
 from services.university.models.group_request import GroupRequest
@@ -102,32 +102,26 @@ class UniversityService(BaseService):
         return TeacherResponse(**response.json())
 
     def create_grade(self, grade_request: GradeRequest) -> GradeResponse:
-        response = self.grade_helper.post_grade(json=grade_request.model_dump())
+        response = self.grade_helper.post_grade(data=grade_request.model_dump())
         return GradeResponse(**response.json())
 
-    def get_grades(self, grade_request: GradeRequest) -> list[GradeResponse]:
-        response = self.grade_helper.get_grades(json=grade_request.model_dump())
+    def get_grades(self, grade_params: GradeQueryParams) -> list[GradeResponse]:
+        params = {k: v for k, v in grade_params.model_dump().items() if v is not None}
+        response = self.grade_helper.get_grades(params=params)
         grades_adapter = TypeAdapter(list[GradeResponse])
         return grades_adapter.validate_python(response.json())
 
-    def get_grade_stats(self,
-                        teacher_id: int | None = None,
-                        student_id: int | None = None,
-                        group_id: int | None = None
-                        ) -> GradeStatsResponse:
-        response = self.grade_helper.get_grades_stats(
-            teacher_id=teacher_id,
-            student_id=student_id,
-            group_id=group_id,
-        )
+    def get_grade_stats(self, grade_params: GradeQueryParams) -> GradeStatsResponse:
+        params = {k: v for k, v in grade_params.model_dump().items() if v is not None}
+        response = self.grade_helper.get_grades_stats(params=params)
         return GradeStatsResponse(**response.json())
 
     def delete_grade(self, grade_id: int) -> GradeResponse:
         response = self.grade_helper.delete_grade(grade_id=grade_id)
         return GradeResponse(**response.json())
 
-    def update_grade(self, grade_request: GradeStatsResponse, grade_id: int) -> GradeResponse:
+    def update_grade(self, grade_request: GradeRequest, grade_id: int) -> GradeResponse:
         response = self.grade_helper.put_grade(
-            grade_id=grade_id, json=grade_request.model_dump()
+            grade_id=grade_id, data=grade_request.model_dump()
         )
         return GradeResponse(**response.json())
