@@ -7,6 +7,7 @@ from services.university.helpers.student_helper import StudentHelper
 from services.university.helpers.teacher_helper import TeacherHelper
 from services.university.models.grade_request import GradeRequest
 from services.university.models.grade_response import GradeResponse
+from services.university.models.grade_stats_response import GradeStatsResponse
 from services.university.models.group_request import GroupRequest
 from services.university.models.group_response import GroupResponse
 from services.university.models.student_request import StudentRequest
@@ -37,7 +38,7 @@ class UniversityService(BaseService):
         return groups_adapter.validate_python(response.json())
 
     def get_group(self, group_id: int) -> GroupResponse:
-        response = self.group_helper.get_group_id(group_id=group_id)
+        response = self.group_helper.get_group(group_id=group_id)
         return GroupResponse(**response.json())
 
     def delete_group(self, group_id: int) -> GroupResponse:
@@ -68,7 +69,7 @@ class UniversityService(BaseService):
         return StudentResponse(**response.json())
 
     def update_student(
-        self, student_request: StudentRequest, student_id: int
+            self, student_request: StudentRequest, student_id: int
     ) -> StudentResponse:
         response = self.student_helper.put_student(
             student_id=student_id, json=student_request.model_dump()
@@ -93,7 +94,7 @@ class UniversityService(BaseService):
         return TeacherResponse(**response.json())
 
     def update_teacher(
-        self, teacher_request: TeacherRequest, teacher_id: int
+            self, teacher_request: TeacherRequest, teacher_id: int
     ) -> TeacherResponse:
         response = self.teacher_helper.put_teacher(
             teacher_id=teacher_id, json=teacher_request.model_dump()
@@ -104,19 +105,28 @@ class UniversityService(BaseService):
         response = self.grade_helper.post_grade(json=grade_request.model_dump())
         return GradeResponse(**response.json())
 
-    def get_grades(self, grade_request: GradeRequest) -> GradeResponse:
+    def get_grades(self, grade_request: GradeRequest) -> list[GradeResponse]:
         response = self.grade_helper.get_grades(json=grade_request.model_dump())
-        return GradeResponse(**response.json())
+        grades_adapter = TypeAdapter(list[GradeResponse])
+        return grades_adapter.validate_python(response.json())
 
-    def get_grade_stats(self) -> GradeResponse:
-        response = self.grade_helper.get_grades_stats()
-        return GradeResponse(**response.json())
+    def get_grade_stats(self,
+                        teacher_id: int | None = None,
+                        student_id: int | None = None,
+                        group_id: int | None = None
+                        ) -> GradeStatsResponse:
+        response = self.grade_helper.get_grades_stats(
+            teacher_id=teacher_id,
+            student_id=student_id,
+            group_id=group_id,
+        )
+        return GradeStatsResponse(**response.json())
 
     def delete_grade(self, grade_id: int) -> GradeResponse:
         response = self.grade_helper.delete_grade(grade_id=grade_id)
         return GradeResponse(**response.json())
 
-    def update_grade(self, grade_request: GradeRequest, grade_id: int) -> GradeResponse:
+    def update_grade(self, grade_request: GradeStatsResponse, grade_id: int) -> GradeResponse:
         response = self.grade_helper.put_grade(
             grade_id=grade_id, json=grade_request.model_dump()
         )
