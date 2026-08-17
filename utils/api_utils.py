@@ -35,8 +35,8 @@ class ApiUtils:
         self.url = url
 
     @log_response
-    def get(self, endpoint_url, **kwargs):
-        response = self.session.get(self.url + endpoint_url, **kwargs)
+    def get(self, endpoint_url, params=None, **kwargs):
+        response = self.session.get(self.url + endpoint_url, params, **kwargs)
         return response
 
     @log_response
@@ -50,6 +50,6 @@ class ApiUtils:
         return response
 
     @log_response
-    def put(self, endpoint_url, json=None, **kwargs):
-        response = self.session.put(self.url + endpoint_url, json, **kwargs)
+    def put(self, endpoint_url, json=None, data=None, **kwargs):
+        response = self.session.put(self.url + endpoint_url, json, data, **kwargs)
         return response
