@@ -4,6 +4,7 @@ import requests
 
 from logger.logger import Logger
 from services.university.helpers.grade_helper import GradeHelper
+from services.university.models.base_grade import MIN_GRADE, MAX_GRADE
 from services.university.models.base_student import DegreeEnum
 from services.university.models.base_teacher import SubjectEnum
 from services.university.models.grade_request import GradeRequest
@@ -11,7 +12,6 @@ from services.university.models.group_request import GroupRequest
 from services.university.models.student_request import StudentRequest
 from services.university.models.teacher_request import TeacherRequest
 from services.university.university_service import UniversityService
-
 
 faker = Faker()
 
@@ -51,7 +51,7 @@ class TestGradeContract:
         grade = GradeRequest(
             teacher_id=teacher_id,
             student_id=student_id,
-            grade=random.randint(a=0, b=5),
+            grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
             group_id=group_id,
         )
 
