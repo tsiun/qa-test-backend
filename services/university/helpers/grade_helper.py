@@ -13,12 +13,23 @@ class GradeHelper(BaseHelper):
         response = self.api_utils.post(self.ROOT_ENDPOINT, json=json)
         return response
 
-    def get_grades(self) -> requests.Response:
+    def get_grades(self, params: dict | None = None) -> requests.Response:
         response = self.api_utils.get(self.ROOT_ENDPOINT)
         return response
 
-    def get_grades_stats(self) -> requests.Response:
-        response = self.api_utils.get(self.GRADE_STATS_ENDPOINT)
+    def get_grades_stats(
+            self,
+            teacher_id: int | None = None,
+            student_id: int | None = None,
+            group_id: int | None = None,
+    ) -> requests.Response:
+        params = {
+            "teacher_id": teacher_id,
+            "student_id": student_id,
+            "group_id": group_id,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
+        response = self.api_utils.get(self.GRADE_STATS_ENDPOINT, **params)
         return response
 
     def delete_grade(self, grade_id: int) -> requests.Response:
