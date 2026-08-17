@@ -16,7 +16,7 @@ class GroupHelper(BaseHelper):
         response = self.api_utils.get(self.ROOT_ENDPOINT)
         return response
 
-    def get_group_id(self, group_id: int) -> requests.Response:
+    def get_group(self, group_id: int) -> requests.Response:
         group_id_endpoint = f"{self.ENDPOINT_PREFIX}/{group_id}/"
         response = self.api_utils.get(group_id_endpoint)
         return response
