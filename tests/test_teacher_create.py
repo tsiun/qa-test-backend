@@ -72,4 +72,7 @@ class TestTeacher:
         teachers = university_service.get_teachers()
         teacher_ids = [teacher.id for teacher in teachers]
 
-        assert teacher_id in teacher_ids
+        assert teacher_id in teacher_ids, (
+            f"Teacher was not found in the list of teachers. Actual: '{teacher_ids}',"
+            f"bud expected ID: '{teacher_id}' in the list"
+        )
