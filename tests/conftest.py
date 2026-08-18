@@ -85,7 +85,7 @@ def university_api_utils_admin(access_token):
     return api_utils
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="function", autouse=False)
 def group_data(university_api_utils_admin):
     university_service = UniversityService(api_utils=university_api_utils_admin)
     group = GroupRequest(name=faker.word())
@@ -93,14 +93,14 @@ def group_data(university_api_utils_admin):
     return group_data
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="function", autouse=False)
 def group_response(university_api_utils_admin):
     group_helper = GroupHelper(api_utils=university_api_utils_admin)
     group_response = group_helper.post_group({"name": faker.word()})
     return group_response
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="function", autouse=False)
 def teacher_data(university_api_utils_admin):
     university_service = UniversityService(api_utils=university_api_utils_admin)
     teacher = TeacherRequest(
@@ -112,7 +112,7 @@ def teacher_data(university_api_utils_admin):
     return teacher_data
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="function", autouse=False)
 def teacher_response(university_api_utils_admin):
     teacher_helper = TeacherHelper(api_utils=university_api_utils_admin)
     teacher_response = teacher_helper.post_teacher(
