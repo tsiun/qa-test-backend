@@ -69,7 +69,7 @@ class UniversityService(BaseService):
         return StudentResponse(**response.json())
 
     def update_student(
-            self, student_request: StudentRequest, student_id: int
+        self, student_request: StudentRequest, student_id: int
     ) -> StudentResponse:
         response = self.student_helper.put_student(
             student_id=student_id, json=student_request.model_dump()
@@ -89,12 +89,12 @@ class UniversityService(BaseService):
         response = self.teacher_helper.get_teacher(teacher_id=teacher_id)
         return TeacherResponse(**response.json())
 
-    def delete_teachers(self, teacher_id: int) -> TeacherResponse:
+    def delete_teacher(self, teacher_id: int) -> TeacherResponse:
         response = self.teacher_helper.delete_teacher(teacher_id=teacher_id)
         return TeacherResponse(**response.json())
 
     def update_teacher(
-            self, teacher_request: TeacherRequest, teacher_id: int
+        self, teacher_request: TeacherRequest, teacher_id: int
     ) -> TeacherResponse:
         response = self.teacher_helper.put_teacher(
             teacher_id=teacher_id, json=teacher_request.model_dump()
