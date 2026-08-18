@@ -11,7 +11,7 @@ from services.university.university_service import UniversityService
 faker = Faker()
 
 
-class TestStudent:
+class TestStudentCreate:
     def test_create_student_admin(self, university_api_utils_admin):
         Logger.info("### Step 1. Create group")
         university_service = UniversityService(api_utils=university_api_utils_admin)
@@ -32,4 +32,14 @@ class TestStudent:
         assert student_response.group_id == group_response.id, (
             f"Wrong group id. Actual: '{student_response.group_id}',"
             f"but expected '{group_response.id}'"
+        )
+
+    def test_create_student_by_admin(self, student_data):
+        assert student_data.id is not None, (
+            f"The student wasn't create, Actual: 'None', but expected: '{student_data.id}'"
+        )
+
+    def test_create_student_in_group(self, group_data, student_data):
+        assert student_data.group_id == group_data.id, (
+            f"Wrong student id, Actual: '{student_data.group_id}', but expected: '{group_data.id}'"
         )

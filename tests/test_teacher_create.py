@@ -56,6 +56,11 @@ class TestTeacher:
             f"bud expected: '{teacher_response.id}'"
         )
 
+    def test_create_teacher_by_admin(self, teacher_data):
+        assert teacher_data.id is not None, (
+            f"The teacher wasn't create, Actual: 'None', but expected: '{teacher_data.id}'"
+        )
+
     def test_get_list_of_teachers(self, university_api_utils_admin):
         Logger.info("### Step 1. Create a teacher")
         university_service = UniversityService(api_utils=university_api_utils_admin)
