@@ -11,6 +11,7 @@ from services.university.models.student_request import StudentRequest
 from services.university.models.student_response import StudentResponse
 from services.university.university_service import UniversityService
 
+
 faker = Faker()
 
 
@@ -41,7 +42,7 @@ class TestStudentContract:
             f"but expect '{requests.status_codes.codes.ok}'"
         )
 
-    def test_check_student_id_admin(self, university_api_utils_admin):
+    def test_check_student_id_admin(self, university_api_utils_admin, soft_assert):
         Logger.info("### Step 1. Create group")
         university_service = UniversityService(api_utils=university_api_utils_admin)
         group = GroupRequest(name=faker.word())
@@ -63,12 +64,17 @@ class TestStudentContract:
         Logger.info("### Step 3. Compare the actual student id with expected")
         actual_student = university_service.get_student(student_id=student_id)
 
-        assert actual_student.id == student_id, (
-            f"Invalid student ID generated, Actual: '{actual_student.id}',"
-            f"but expect '{student_id}'"
+        soft_assert.check(
+            actual_student.id == student_id,
+            (
+                f"Invalid student ID generated, Actual: '{actual_student.id}',"
+                f"but expect '{student_id}'"
+            ),
         )
-
-        assert actual_student.group_id == group_id, (
-            f"Invalid group ID generated, Actual: '{actual_student.group_id}',"
-            f"but expect '{group_id}'"
+        soft_assert.check(
+            actual_student.group_id == group_id,
+            (
+                f"Invalid group ID generated, Actual: '{actual_student.group_id}',"
+                f"but expect '{group_id}'"
+            ),
         )
