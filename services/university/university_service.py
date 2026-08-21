@@ -5,7 +5,7 @@ from services.university.helpers.grade_helper import GradeHelper
 from services.university.helpers.group_helper import GroupHelper
 from services.university.helpers.student_helper import StudentHelper
 from services.university.helpers.teacher_helper import TeacherHelper
-from services.university.models.grade_request import GradeRequest, GradeQueryParams
+from services.university.models.grade_request import GradeRequest
 from services.university.models.grade_response import GradeResponse
 from services.university.models.grade_stats_response import GradeStatsResponse
 from services.university.models.group_request import GroupRequest
@@ -105,14 +105,28 @@ class UniversityService(BaseService):
         response = self.grade_helper.post_grade(data=grade_request.model_dump())
         return GradeResponse(**response.json())
 
-    def get_grades(self, grade_params: GradeQueryParams) -> list[GradeResponse]:
-        params = {k: v for k, v in grade_params.model_dump().items() if v is not None}
+    def get_grades(
+        self, student_id: int = None, teacher_id: int = None, group_id: int = None
+    ) -> list[GradeResponse]:
+        params = {
+            "student_id": student_id,
+            "teacher_id": teacher_id,
+            "group_id": group_id,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
         response = self.grade_helper.get_grades(params=params)
         grades_adapter = TypeAdapter(list[GradeResponse])
         return grades_adapter.validate_python(response.json())
 
-    def get_grade_stats(self, grade_params: GradeQueryParams) -> GradeStatsResponse:
-        params = {k: v for k, v in grade_params.model_dump().items() if v is not None}
+    def get_grade_stats(
+        self, student_id: int = None, teacher_id: int = None, group_id: int = None
+    ) -> GradeStatsResponse:
+        params = {
+            "student_id": student_id,
+            "teacher_id": teacher_id,
+            "group_id": group_id,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
         response = self.grade_helper.get_grades_stats(params=params)
         return GradeStatsResponse(**response.json())
 
