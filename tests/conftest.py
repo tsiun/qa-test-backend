@@ -22,6 +22,8 @@ from services.university.university_service import UniversityService
 from utils.api_utils import ApiUtils
 from faker import Faker
 
+from utils.soft_assert import SoftAssert
+
 faker = Faker()
 
 
@@ -193,3 +195,10 @@ def grade_response(university_api_utils_admin, teacher_data, student_data):
     )
     yield grade_response
     grade_helper.delete_grade(grade_id=grade_response.json()["id"])
+
+
+@pytest.fixture(scope="function", autouse=False)
+def soft_assert():
+    soft = SoftAssert()
+    yield soft
+    soft.assert_all()
