@@ -16,7 +16,11 @@ faker = Faker()
 
 
 class TestGetStat:
-    def test_get_stat_for_group(self, university_api_utils_admin, soft_assert):
+    def test_get_stat_for_group(
+        self,
+        university_api_utils_admin,
+        soft_assert,
+    ):
         Logger.step("### Step 1. Create two groups")
         university_service = UniversityService(api_utils=university_api_utils_admin)
 
