@@ -78,3 +78,5 @@ class TestStudentContract:
                 f"but expect '{group_id}'"
             ),
         )
+
+        soft_assert.assert_all()
