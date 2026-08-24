@@ -17,7 +17,15 @@ class GradeHelper(BaseHelper):
         response = self.api_utils.get(self.ROOT_ENDPOINT, params=params)
         return response
 
-    def get_grades_stats(self, params: dict | None = None) -> requests.Response:
+    def get_grades_stats(
+        self, student_id: int = None, teacher_id: int = None, group_id: int = None
+    ) -> requests.Response:
+        params = {
+            "student_id": student_id,
+            "teacher_id": teacher_id,
+            "group_id": group_id,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
         response = self.api_utils.get(self.GRADE_STATS_ENDPOINT, params=params)
         return response
 
