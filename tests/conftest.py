@@ -199,6 +199,86 @@ def grade_response(university_api_utils_admin, teacher_data, student_data):
 
 @pytest.fixture(scope="function", autouse=False)
 def soft_assert():
-    soft = SoftAssert()
-    yield soft
-    soft.assert_all()
+    yield SoftAssert()
+
+
+@pytest.fixture(scope="function", autouse=False)
+def group_factory(university_api_utils_admin):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    created_ids = []
+
+    def _create_group():
+        group = GroupRequest(name=faker.word())
+        group_data = university_service.create_group(group_request=group)
+        created_ids.append(group_data.id)
+        return group_data
+
+    yield _create_group
+
+    for group_id in created_ids:
+        university_service.delete_group(group_id=group_id)
+
+
+@pytest.fixture(scope="function", autouse=False)
+def student_factory(university_api_utils_admin, group_factory):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    created_ids = []
+
+    def _create_student(group_id: int):
+        student = StudentRequest(
+            first_name=faker.first_name(),
+            last_name=faker.last_name(),
+            email=faker.email(),
+            degree=random.choice([option for option in DegreeEnum]),
+            phone=faker.numerify("+7##########"),
+            group_id=group_id,
+        )
+        student_data = university_service.create_student(student_request=student)
+        created_ids.append(student_data.id)
+        return student_data
+
+    yield _create_student
+
+    for student_id in created_ids:
+        university_service.delete_student(student_id=student_id)
+
+
+@pytest.fixture(scope="function", autouse=False)
+def teacher_factory(university_api_utils_admin):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    create_ids = []
+
+    def _create_teacher():
+        teacher = TeacherRequest(
+            first_name=faker.first_name(),
+            last_name=faker.last_name(),
+            subject=random.choice(list(SubjectEnum)),
+        )
+        teacher_data = university_service.create_teacher(teacher_request=teacher)
+        create_ids.append(teacher_data.id)
+        return teacher_data
+
+    yield _create_teacher
+    for teacher_id in create_ids:
+        university_service.delete_teacher(teacher_id=teacher_id)
+
+
+@pytest.fixture(scope="function", autouse=False)
+def grade_factory(university_api_utils_admin, student_factory, teacher_factory):
+    university_service = UniversityService(api_utils=university_api_utils_admin)
+    created_ids = []
+
+    def _create_grade(teacher_id, student_id, **kwargs):
+        grade_request = GradeRequest(
+            teacher_id=teacher_id,
+            student_id=student_id,
+            grade=kwargs.get("grade", random.randint(a=MIN_GRADE, b=MAX_GRADE)),
+        )
+        grade_data = university_service.create_grade(grade_request=grade_request)
+        created_ids.append(grade_data.id)
+        return grade_data
+
+    yield _create_grade
+
+    for grade_id in created_ids:
+        university_service.delete_grade(grade_id=grade_id)
