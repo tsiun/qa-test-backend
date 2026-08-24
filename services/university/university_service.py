@@ -69,7 +69,7 @@ class UniversityService(BaseService):
         return StudentResponse(**response.json())
 
     def update_student(
-            self, student_request: StudentRequest, student_id: int
+        self, student_request: StudentRequest, student_id: int
     ) -> StudentResponse:
         response = self.student_helper.put_student(
             student_id=student_id, json=student_request.model_dump()
@@ -94,7 +94,7 @@ class UniversityService(BaseService):
         return TeacherResponse(**response.json())
 
     def update_teacher(
-            self, teacher_request: TeacherRequest, teacher_id: int
+        self, teacher_request: TeacherRequest, teacher_id: int
     ) -> TeacherResponse:
         response = self.teacher_helper.put_teacher(
             teacher_id=teacher_id, json=teacher_request.model_dump()
@@ -106,7 +106,7 @@ class UniversityService(BaseService):
         return GradeResponse(**response.json())
 
     def get_grades(
-            self, student_id: int = None, teacher_id: int = None, group_id: int = None
+        self, student_id: int = None, teacher_id: int = None, group_id: int = None
     ) -> list[GradeResponse]:
         params = {
             "student_id": student_id,
@@ -119,7 +119,7 @@ class UniversityService(BaseService):
         return grades_adapter.validate_python(response.json())
 
     def get_grades_stats(
-            self, student_id: int = None, teacher_id: int = None, group_id: int = None
+        self, student_id: int = None, teacher_id: int = None, group_id: int = None
     ) -> GradeStatsResponse:
         params = {
             "student_id": student_id,
@@ -127,7 +127,9 @@ class UniversityService(BaseService):
             "group_id": group_id,
         }
         params = {k: v for k, v in params.items() if v is not None}
-        response = self.grade_helper.get_grades_stats(params=params)
+        response = self.grade_helper.get_grades_stats(
+            student_id=student_id, teacher_id=teacher_id, group_id=group_id
+        )
         return GradeStatsResponse(**response.json())
 
     def delete_grade(self, grade_id: int) -> GradeResponse:
