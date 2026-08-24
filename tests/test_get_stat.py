@@ -1,6 +1,7 @@
 import random
 
 from faker import Faker
+import pytest
 
 from logger.logger import Logger
 from services.university.models.base_grade import MAX_GRADE, MIN_GRADE
@@ -17,9 +18,9 @@ faker = Faker()
 
 class TestGetStat:
     def test_get_stat_for_group(
-        self,
-        university_api_utils_admin,
-        soft_assert,
+            self,
+            university_api_utils_admin,
+            soft_assert,
     ):
         Logger.step("### Step 1. Create two groups")
         university_service = UniversityService(api_utils=university_api_utils_admin)
@@ -103,19 +104,13 @@ class TestGetStat:
                 grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
             )
         )
-        # grade_student3_by_teacher1 = university_service.create_grade(
-        #     grade_request=GradeRequest(
-        #         teacher_id=teacher_1.id,
-        #         student_id=student_3.id,
-        #         grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
-        #     )
-        # )
+
         Logger.step("### Step 5. Count an expected average")
         expected_avg = (
-            grade_student1_by_teacher1.grade
-            + grade_student1_by_teacher2.grade
-            + grade_student2_by_teacher2.grade
-        ) / 3
+                               grade_student1_by_teacher1.grade
+                               + grade_student1_by_teacher2.grade
+                               + grade_student2_by_teacher2.grade
+                       ) / 3
 
         Logger.step("### Step 6. Get statistics for group_1")
         stats_group_1 = university_service.get_grades_stats(group_id=group_1.id)
@@ -144,8 +139,12 @@ class TestGetStat:
             ),
         )
 
-    def get_stat_for_student():
+        soft_assert.assert_all()
+
+    @pytest.mark.skip(reason="Not implemented yet")
+    def test_get_stat_for_student(self):
         pass
 
-    def get_stat_for_teacher():
+    @pytest.mark.skip(reason="Not implemented yet")
+    def test_get_stat_for_teacher(self):
         pass
