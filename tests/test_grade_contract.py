@@ -52,7 +52,6 @@ class TestGradeContract:
             teacher_id=teacher_id,
             student_id=student_id,
             grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
-            # group_id=group_id,
         )
 
         response = grade_helper.post_grade(data=grade.model_dump())
