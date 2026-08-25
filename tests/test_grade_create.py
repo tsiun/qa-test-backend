@@ -75,7 +75,7 @@ class TestGradeCreate:
         )
         student_data = university_service.create_student(student_request=student)
 
-        Logger.step("### Step . Prepare data for a grade for student")
+        Logger.step("### Step 2. Prepare data for a grade for student")
 
         university_service = UniversityService(api_utils=university_api_utils_admin)
         grade = GradeRequest(
@@ -87,4 +87,19 @@ class TestGradeCreate:
 
         assert grade_data.student_id == student_data.id, (
             f"Wrong student id, Actual: '{grade_data.student_id}', but expected: '{student_data.id}'"
+        )
+
+    def test_create_grade_with_wrong_data(self, university_api_utils_admin):
+        Logger.step("### Step 1. Prepare data for a grade with wrong data")
+
+        university_service = UniversityService(api_utils=university_api_utils_admin)
+        grade = GradeRequest(
+            teacher_id=faker.randint(min=100, max=150),
+            student_id=faker.randint(min=100, max=150),
+            grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
+        )
+        grade_data = university_service.create_grade(grade_request=grade)
+
+        assert grade_data == 404, (
+            f"The grade was given with wrong data, Actual: '{grade_data}', but expected: '404'"
         )
