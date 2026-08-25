@@ -1,6 +1,7 @@
 from pydantic import TypeAdapter
 
 from services.general.base_service import BaseService
+from services.general.models.success_response import SuccessResponse
 from services.university.helpers.grade_helper import GradeHelper
 from services.university.helpers.group_helper import GroupHelper
 from services.university.helpers.student_helper import StudentHelper
@@ -41,9 +42,9 @@ class UniversityService(BaseService):
         response = self.group_helper.get_group(group_id=group_id)
         return GroupResponse(**response.json())
 
-    def delete_group(self, group_id: int) -> GroupResponse:
+    def delete_group(self, group_id: int) -> SuccessResponse:
         response = self.group_helper.delete_group(group_id=group_id)
-        return GroupResponse(**response.json())
+        return SuccessResponse(**response.json())
 
     def update_group(self, group_request: GroupRequest, group_id: int) -> GroupResponse:
         response = self.group_helper.put_group(
@@ -64,9 +65,9 @@ class UniversityService(BaseService):
         response = self.student_helper.get_student(student_id=student_id)
         return StudentResponse(**response.json())
 
-    def delete_student(self, student_id: int) -> StudentResponse:
+    def delete_student(self, student_id: int) -> SuccessResponse:
         response = self.student_helper.delete_student(student_id=student_id)
-        return StudentResponse(**response.json())
+        return SuccessResponse(**response.json())
 
     def update_student(
         self, student_request: StudentRequest, student_id: int
@@ -89,9 +90,9 @@ class UniversityService(BaseService):
         response = self.teacher_helper.get_teacher(teacher_id=teacher_id)
         return TeacherResponse(**response.json())
 
-    def delete_teacher(self, teacher_id: int) -> TeacherResponse:
+    def delete_teacher(self, teacher_id: int) -> SuccessResponse:
         response = self.teacher_helper.delete_teacher(teacher_id=teacher_id)
-        return TeacherResponse(**response.json())
+        return SuccessResponse(**response.json())
 
     def update_teacher(
         self, teacher_request: TeacherRequest, teacher_id: int
@@ -132,9 +133,9 @@ class UniversityService(BaseService):
         )
         return GradeStatsResponse(**response.json())
 
-    def delete_grade(self, grade_id: int) -> GradeResponse:
+    def delete_grade(self, grade_id: int) -> SuccessResponse:
         response = self.grade_helper.delete_grade(grade_id=grade_id)
-        return GradeResponse(**response.json())
+        return SuccessResponse(**response.json())
 
     def update_grade(self, grade_request: GradeRequest, grade_id: int) -> GradeResponse:
         response = self.grade_helper.put_grade(
