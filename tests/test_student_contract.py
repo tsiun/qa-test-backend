@@ -17,6 +17,8 @@ faker = Faker()
 
 class TestStudentContract:
     def test_create_student_anonym(self, university_api_utils_anonym):
+
+        Logger.step("### Step 1. Create a student anonymously")
         student_helper = StudentHelper(api_utils=university_api_utils_anonym)
         student = StudentRequest(
             first_name=faker.first_name(),
@@ -28,14 +30,19 @@ class TestStudentContract:
         )
         response = student_helper.post_student(json=student.model_dump())
 
+        Logger.step("### Step 2. Check that a student was not created")
+
         assert response.status_code == requests.status_codes.codes.unauthorized, (
             f"Wrong status code, Actual: '{response.status_code}',"
             f"but expect '{requests.status_codes.codes.unauthorized}'"
         )
 
     def test_check_students_admin(self, university_api_utils_admin):
+        Logger.step("### Step 1. Check students as an admin")
         student_helper = StudentHelper(university_api_utils_admin)
         response = student_helper.get_students()
+
+        Logger.step("### Step 2. Check the response status code")
 
         assert response.status_code == requests.status_codes.codes.ok, (
             f"Wrong status code, Actual: '{response.status_code}',"
