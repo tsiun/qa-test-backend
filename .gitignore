@@ -78,4 +78,5 @@ yarn-error.log*
 
 # Misc
 *.log
+*.log.*
 *.tmp
