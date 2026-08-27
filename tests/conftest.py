@@ -282,3 +282,28 @@ def grade_factory(university_api_utils_admin, student_factory, teacher_factory):
 
     for grade_id in created_ids:
         university_service.delete_grade(grade_id=grade_id)
+
+
+@pytest.fixture(scope="function", autouse=False)
+def common_entities(
+    group_factory,
+    student_factory,
+    teacher_factory,
+    grade_factory,
+):
+    group = group_factory()
+    teacher_1 = teacher_factory()
+    teacher_2 = teacher_factory()
+    student_1 = student_factory(group_id=group.id)
+    student_2 = student_factory(group_id=group.id)
+
+    grade_1 = grade_factory(teacher_id=teacher_1.id, student_id=student_1.id, grade=2)
+    grade_2 = grade_factory(teacher_id=teacher_1.id, student_id=student_2.id, grade=3)
+    grade_3 = grade_factory(teacher_id=teacher_2.id, student_id=student_1.id, grade=3)
+
+    yield {
+        "group": group,
+        "teachers": [teacher_1, teacher_2],
+        "students": [student_1, student_2],
+        "grades": [grade_1, grade_2, grade_3],
+    }
