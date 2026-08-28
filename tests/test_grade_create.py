@@ -89,13 +89,21 @@ class TestGradeCreate:
             f"Wrong student id, Actual: '{grade_data.student_id}', but expected: '{student_data.id}'"
         )
 
-    def test_create_grade_with_wrong_data(self, university_api_utils_admin):
-        Logger.step("### Step 1. Prepare data for a grade with wrong data")
-
+    def test_create_grade_with_wrong_data(
+        self, university_api_utils_admin, teacher_data
+    ):
+        Logger.step("### Step 1. Get an invalid student id")
         university_service = UniversityService(api_utils=university_api_utils_admin)
+
+        students = university_service.get_students()
+        max_student_id = max(student.id for student in students)
+        invalid_student_id = max_student_id + 50
+
+        Logger.step("### Step 2. Prepare data for a grade with invalid student id")
+
         grade = GradeRequest(
-            teacher_id=faker.randint(min=100, max=150),
-            student_id=faker.randint(min=100, max=150),
+            teacher_id=teacher_data.id,
+            student_id=invalid_student_id,
             grade=random.randint(a=MIN_GRADE, b=MAX_GRADE),
         )
         grade_data = university_service.create_grade(grade_request=grade)
