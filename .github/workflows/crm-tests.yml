@@ -1,0 +1,107 @@
+name: API Autotests CI/CD
+
+on: 
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository (get code)
+              uses: actions/checkout@v4
+
+            - name: Run Ruff
+              uses: astral-sh/ruff-action@v4.1.0
+              with:
+                src: "."
+                version-file: requirements.txt
+    tests:
+        needs: lint
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        env:
+            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB_AUTH: ${{ secrets.POSTGRES_DB_AUTH }}
+            POSTGRES_DB_UNIVERSITY: ${{ secrets.POSTGRES_DB_UNIVERSITY }}
+            AUTH_SERVICE_INTERNAL_URL: ${{ secrets.AUTH_SERVICE_INTERNAL_URL }}
+            AUTH_SERVICE_API_URL: ${{ secrets.AUTH_SERVICE_API_URL }}
+            UNIVERSITY_SERVICE_INTERNAL_URL: ${{ secrets.UNIVERSITY_SERVICE_INTERNAL_URL }}
+            UNIVERSITY_SERVICE_API_URL: ${{ secrets.UNIVERSITY_SERVICE_API_URL }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Start test system with Docker Compose
+              run: docker compose up -d --wait
+
+            - name: Build test image
+              run: docker build -t crm-tests -f Dockerfile.tests .
+
+            - name: Wait for services
+              run: |
+                for url in \
+                    http://127.0.0.1:8000/docs \
+                    http://127.0.0.1:8001/docs 
+                do
+                    for attempt in {1..30}; do
+                        if curl --fail --silent "$url" > /dev/null; then
+                            echo "$url is ready"
+                            break
+                        fi
+
+                        if [ "$attempt" -eq 30 ]; then
+                            docker compose ps
+                            docker compose logs --no-color
+                            exit 1
+                        fi
+
+                        sleep 2
+                    done
+                done
+
+            - name: Run tests in Docker
+              run: |
+                  mkdir -p allure-results
+
+                  docker run --rm \
+                      --network host \
+                      -v "$PWD/allure-results:/app/allure-results" \
+                      crm-tests
+
+            - name: Get Allure history
+              if: always()
+              continue-on-error: true
+              uses: actions/checkout@v4
+              with:
+                  ref: gh-pages
+                  path: gh-pages
+
+            - name: Prepare Allure directories
+              if: always()
+              run: mkdir -p allure-results gh-pages
+                  
+            - name: Generate Allure report
+              if: always()
+              uses: simple-elf/allure-report-action@master
+              with:
+                allure_results: allure-results
+                gh_pages: gh-pages
+                allure_report: allure-report
+                allure_history: allure-history
+
+            - name: Publish Allure report to GitHub Pages
+              if: always()
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                publish_branch: gh-pages
+                publish_dir: allure-history
+
+            - name: Stop Docker Compose services
+              if: always()
+              run: docker compose down -v
