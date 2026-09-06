@@ -1,5 +1,8 @@
 name: Demo CI tests
 on:
+    push:
+        branches:
+            - features/full-review
     workflow_dispatch:
 jobs:
     print:
