@@ -1,10 +1,11 @@
-from faker import Faker
 import random
+
 import requests
+from faker import Faker
 
 from logger.logger import Logger
 from services.university.helpers.grade_helper import GradeHelper
-from services.university.models.base_grade import MIN_GRADE, MAX_GRADE
+from services.university.models.base_grade import MAX_GRADE, MIN_GRADE
 from services.university.models.base_student import DegreeEnum
 from services.university.models.base_teacher import SubjectEnum
 from services.university.models.grade_request import GradeRequest
