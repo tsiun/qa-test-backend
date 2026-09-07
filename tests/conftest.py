@@ -3,6 +3,7 @@ import time
 
 import pytest
 import requests
+from faker import Faker
 
 from services.auth.auth_service import AuthService
 from services.auth.models.login_request import LoginRequest
@@ -20,8 +21,6 @@ from services.university.models.student_request import StudentRequest
 from services.university.models.teacher_request import TeacherRequest
 from services.university.university_service import UniversityService
 from utils.api_utils import ApiUtils
-from faker import Faker
-
 from utils.soft_assert import SoftAssert
 
 faker = Faker()
