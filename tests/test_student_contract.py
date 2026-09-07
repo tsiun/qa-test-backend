@@ -1,16 +1,14 @@
 import random
 
-from faker import Faker
 import requests
+from faker import Faker
 
 from logger.logger import Logger
 from services.university.helpers.student_helper import StudentHelper
 from services.university.models.base_student import DegreeEnum
 from services.university.models.group_request import GroupRequest
 from services.university.models.student_request import StudentRequest
-from services.university.models.student_response import StudentResponse
 from services.university.university_service import UniversityService
-
 
 faker = Faker()
 
