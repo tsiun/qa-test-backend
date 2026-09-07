@@ -2,6 +2,7 @@ import requests
 
 from services.general.helpers.base_helper import BaseHelper
 
+
 class AuthorizationHelper(BaseHelper):
 
     ENDPOINT_PREFIX = "/auth"
