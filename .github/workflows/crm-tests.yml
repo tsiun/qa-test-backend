@@ -1,7 +1,7 @@
 name: API Autotests CI/CD
 
 on: 
-    pull_request:
+    # pull_request:
     workflow_dispatch:
 
 jobs:
@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository (get code)
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Run Ruff
               uses: astral-sh/ruff-action@v4.1.0
@@ -30,7 +30,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Start test system with Docker Compose
               run: docker compose up -d --wait
@@ -53,6 +53,7 @@ jobs:
               with:
                 name: allure-results
                 path: allure-results
+                retention-days: 1
                 if-no-files-found: warn
 
             - name: Stop Docker Compose services
@@ -87,7 +88,9 @@ jobs:
                 mkdir -p gh-pages
 
             - name: Generate Allure report
-              uses: simple-elf/allure-report-action@master
+            #   uses: simple-elf/allure-report-action@master
+              uses: simple-elf/allure-report-action
+
               with:
                 allure_results: allure-results
                 gh_pages: gh-pages
