@@ -1,4 +1,4 @@
-from pydantic import ConfigDict, BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from services.university.models.base_grade import MAX_GRADE, MIN_GRADE
 
