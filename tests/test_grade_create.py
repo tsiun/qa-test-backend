@@ -2,7 +2,6 @@ import random
 
 from faker import Faker
 
-
 from logger.logger import Logger
 from services.university.models.base_grade import MAX_GRADE, MIN_GRADE
 from services.university.models.base_student import DegreeEnum
