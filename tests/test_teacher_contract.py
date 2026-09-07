@@ -1,10 +1,9 @@
 import random
 
-from faker import Faker
 import requests
+from faker import Faker
 
 from logger.logger import Logger
-from services.university import university_service
 from services.university.helpers.teacher_helper import TeacherHelper
 from services.university.models.base_teacher import SubjectEnum
 from services.university.models.teacher_request import TeacherRequest
