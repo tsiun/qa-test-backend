@@ -1,7 +1,7 @@
 import random
 
-from faker import Faker
 import pytest
+from faker import Faker
 
 from logger.logger import Logger
 from services.university.models.base_grade import MAX_GRADE, MIN_GRADE
