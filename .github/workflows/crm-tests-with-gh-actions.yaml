@@ -1,0 +1,117 @@
+name: API Autotests CI/CD
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (get code)
+        uses: actions/checkout@v6
+
+      - name: Run Ruff
+        uses: astral-sh/ruff-action@v4.1.0
+
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB_AUTH: ${{ secrets.POSTGRES_DB_AUTH }}
+      POSTGRES_DB_UNIVERSITY: ${{ secrets.POSTGRES_DB_UNIVERSITY }}
+      AUTH_SERVICE_INTERNAL_URL: ${{ vars.AUTH_SERVICE_INTERNAL_URL }}
+      AUTH_SERVICE_API_URL: ${{ vars.AUTH_SERVICE_API_URL }}
+      UNIVERSITY_SERVICE_INTERNAL_URL: ${{ vars.UNIVERSITY_SERVICE_INTERNAL_URL }}
+      UNIVERSITY_SERVICE_API_URL: ${{ vars.UNIVERSITY_SERVICE_API_URL }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Start test system with Docker Compose
+        run: docker compose up -d --wait
+
+      - name: Build test image
+        run: docker build -t crm-tests -f Dockerfile.tests .
+
+      - name: Run tests in Docker
+        run: |
+          mkdir -p allure-results
+          docker run --rm \
+              --network host \
+              -v "$PWD/allure-results:/app/allure-results" \
+              crm-tests
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Stop Docker Compose services
+        if: always()
+        run: docker compose down -v
+
+  publish-allure-report:
+    needs: tests
+    if: ${{ always() && needs.tests.result != 'cancelled' && needs.tests.result != 'skipped' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Restore Allure history from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: gh-pages
+          key: allure-history-${{ github.run_number }}
+          restore-keys: |
+            allure-history-
+
+      - name: Prepare Allure directories
+        run: |
+          mkdir -p allure-results
+          mkdir -p gh-pages
+
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-history
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Update Allure history for next run
+        run: cp -r allure-history/. gh-pages/
+
+      - name: Save Allure history to cache
+        uses: actions/cache/save@v4
+        with:
+          path: gh-pages
+          key: allure-history-${{ github.run_number }}
