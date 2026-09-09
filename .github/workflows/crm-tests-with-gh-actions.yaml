@@ -62,8 +62,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      pages: write       # право деплоить Pages
-      id-token: write    # OIDC-токен для авторизации деплоя
+      pages: write
+      id-token: write
 
     environment:
       name: github-pages
